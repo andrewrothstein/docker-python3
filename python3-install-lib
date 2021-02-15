@@ -1,0 +1,115 @@
+install_dnf () {
+    local pkg=${1:-python3}
+    dnf update -y
+    dnf install -y $pkg
+    dnf clean all
+}
+
+install_ubi () {
+    install_dnf python36
+}
+
+install_apk () {
+    local pkg=${1:-python3}
+    apk update
+    apk upgrade
+    apk add $pkg
+    rm -rf /var/cache/apk/*
+}
+
+install_alpine() {
+    install_apk
+}
+
+install_apt_get () {
+    local pkg=${1:-python3}
+    apt-get update -y
+    apt-get upgrade -y
+    apt-get install -y $pkg
+    apt-get clean -y
+}
+
+install_ubuntu () {
+    install_apt_get
+}
+
+install_pacman () {
+    pacman -S -y
+    pacman -S --noconfirm python
+}
+
+install_archlinux () {
+    install_pacman
+}
+
+install_fedora () {
+    install_dnf
+}
+
+install_debian () {
+    install_apt_get
+}
+
+install_debian_stretch () {
+    install_debian
+}
+
+install_debian_bullseye () {
+    install_debian
+}
+
+install_debian_buster () {
+    install_debian
+}
+
+install_fedora_32 () {
+    install_fedora
+}
+
+install_fedora_31 () {
+    install_fedora
+}
+
+install_archlinux_latest () {
+    install_archlinux
+}
+
+install_ubuntu_bionic () {
+    install_ubuntu
+}
+
+install_ubuntu_focal () {
+    install_ubuntu
+}
+
+install_ubuntu_xenial () {
+    install_ubuntu
+}
+
+install_centos_7 () {
+    install_centos
+}
+
+install_centos_8 () {
+    install_centos
+}
+
+install_alpine_3_12 () {
+    install_alpine
+}
+
+install_alpine_3_13 () {
+    install_alpine
+}
+
+install_alpine_edge () {
+    install_alpine
+}
+
+install_ubi8_8_1 () {
+    install_ubi8_8
+}
+
+install_ubi8_8_2 () {
+    install_ubi8_8
+}
