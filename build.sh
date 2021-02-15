@@ -16,6 +16,6 @@ write_dockerfile_$os $dotver $dashver
 buildah bud \
        --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
        --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
-       -t ${target_registry}/${target_groupname}/${target_name}:${os}_${dotver} \
+       -t ${target_registry}/${target_groupname}/${target_name}:0.0.0-${os}-${dotver} \
        -f Dockerfile.${os}_${dotver} \
        .

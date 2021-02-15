@@ -38,4 +38,4 @@ before_script:
 
 script:
   - ./build.sh $OS $DOTVER $DASHVER
-  - buildah push quay.io/andrewrothstein/docker-python3:${OS}_${DOTVER}
+  - buildah push quay.io/andrewrothstein/docker-python3:0.0.0-${OS}-${DOTVER}
