@@ -12,7 +12,7 @@ ver=$2
 . ./container-build-lib
 
 write_dockerfile_$os $ver
-buildah bud \
+sudo buildah bud \
        --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
        --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
        -t ${target_registry}/${target_groupname}/${target_name}:0.0.0-${os}-${ver} \
