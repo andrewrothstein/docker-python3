@@ -57,66 +57,12 @@ install_debian () {
     install_apt_get
 }
 
-install_debian_stretch () {
-    install_debian
-}
-
-install_debian_bullseye () {
-    install_debian
-}
-
-install_debian_buster () {
-    install_debian
-}
-
-install_fedora_32 () {
-    install_fedora
-}
-
-install_fedora_31 () {
-    install_fedora
-}
-
-install_archlinux_latest () {
-    install_archlinux
-}
-
-install_ubuntu_bionic () {
-    install_ubuntu
-}
-
-install_ubuntu_focal () {
-    install_ubuntu
-}
-
-install_ubuntu_xenial () {
-    install_ubuntu
-}
-
-install_centos_7 () {
-    install_yum
-}
-
-install_centos_8 () {
-    install_dnf
-}
-
-install_alpine_3_12 () {
-    install_alpine
-}
-
-install_alpine_3_13 () {
-    install_alpine
-}
-
-install_alpine_edge () {
-    install_alpine
-}
-
-install_ubi8_8_1 () {
-    install_ubi8
-}
-
-install_ubi8_8_2 () {
-    install_ubi8
+install_centos () {
+    local ver=$1
+    if [ "$ver" -gt "7" ];
+    then
+        install_dnf
+    else
+        install_yum
+    fi
 }

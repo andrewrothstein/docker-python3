@@ -16,27 +16,27 @@ branches:
     - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 
 env:
-  - OS=alpine DOTVER=3.12 DASHVER=3_12
-  - OS=alpine DOTVER=3.13 DASHVER=3_13
-  - OS=alpine DOTVER=edge DASHVER=edge
-  - OS=archlinux DOTVER=latest DASHVER=latest
-  - OS=centos DOTVER=7 DASHVER=7
-  - OS=centos DOTVER=8 DASHVER=8
-  - OS=debian DOTVER=bullseye DASHVER=bullseye
-  - OS=debian DOTVER=buster DASHVER=buster
-  - OS=debian DOTVER=stretch DASHVER=stretch
-  - OS=fedora DOTVER=31 DASHVER=31
-  - OS=fedora DOTVER=32 DASHVER=32
-  - OS=ubi8 DOTVER=8.1 DASHVER=8_1
-  - OS=ubi8 DOTVER=8.2 DASHVER=8_2
-  - OS=ubuntu DOTVER=bionic DASHVER=bionic
-  - OS=ubuntu DOTVER=focal DASHVER=focal
-  - OS=ubuntu DOTVER=xenial DASHVER=xenial
+  - OS=alpine VER=3.12
+  - OS=alpine VER=3.13
+  - OS=alpine VER=edge
+  - OS=archlinux VER=latest
+  - OS=centos VER=7
+  - OS=centos VER=8
+  - OS=debian VER=bullseye
+  - OS=debian VER=buster
+  - OS=debian VER=stretch
+  - OS=fedora VER=31
+  - OS=fedora VER=32
+  - OS=ubi8 VER=8.1
+  - OS=ubi8 VER=8.2
+  - OS=ubuntu VER=bionic
+  - OS=ubuntu VER=focal
+  - OS=ubuntu VER=xenial
 
 before_script:
   - buildah login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_PWD" docker.io
   - buildah login -u "$TARGET_REGISTRY_USER" -p "$TARGET_REGISTRY_PWD" quay.io
 
 script:
-  - ./build.sh $OS $DOTVER $DASHVER
-  - buildah push quay.io/andrewrothstein/docker-python3:0.0.0-${OS}-${DOTVER}
+  - ./build.sh $OS $VER
+  - buildah push quay.io/andrewrothstein/docker-python3:0.0.0-${OS}-${VER}

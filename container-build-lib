@@ -5,7 +5,6 @@ write_dockerfile () {
 
     local os=$4
     local dotver=$5
-    local dashver=$6
 
     local fq_upstream=${upstream_registry}/${upstream_namespace}/${upstream_repo}:${dotver}
     if [ "${upstream_namespace}" = "" ];
@@ -21,64 +20,58 @@ MAINTAINER "Andrew Rothstein" andrew.rothstein@gmail.com
 
 ADD python3-install-lib python3-install-lib
 ADD install.sh install.sh
-RUN ./install.sh ${os} ${dashver}
+RUN ./install.sh ${os} ${ver}
 EOF
 }
 
 write_dockerfile_archlinux () {
-    local dotver=$1
-    local dashver=$2
-    write_dockerfile docker.io archlinux base archlinux $dotver $dashver
+    local ver=$1
+    write_dockerfile docker.io archlinux base archlinux $ver
 }
 
 write_dockerfile_gentoo () {
-    local dotver=$1
-    local dashver=$2
-    write_dockerfile docker.io gentoo stage3-amd64 gentoo $dotver $dashver
+    local ver=$1
+    write_dockerfile docker.io gentoo stage3-amd64 gentoo $ver
 }
 
 write_dockerfile_simple () {
     local os=$1
-    local dotver=$2
-    local dashver=$3
-    write_dockerfile docker.io library $os $os $dotver $dashver
+    local ver=$2
+    write_dockerfile docker.io library $os $os $ver
 }
 
 write_dockerfile_alpine () {
-    write_dockerfile_simple alpine $1 $2
+    write_dockerfile_simple alpine $1
 }
 
 write_dockerfile_centos () {
-    write_dockerfile_simple centos $1 $2
+    write_dockerfile_simple centos $1
 }
 
 write_dockerfile_debian () {
-    write_dockerfile_simple debian $1 $2
+    write_dockerfile_simple debian $1
 }
 
 write_dockerfile_ubuntu () {
-    write_dockerfile_simple ubuntu $1 $2
+    write_dockerfile_simple ubuntu $1
 }
 
 write_dockerfile_fedora () {
-    local dotver=$1
-    local dashver=$2
-    if [ "$dotver" -ge "24" ];
+    local ver=$1
+    if [ "$ver" -ge "24" ];
     then
-        write_dockerfile registry.fedoraproject.org '' fedora fedora $1 $2
+        write_dockerfile registry.fedoraproject.org '' fedora fedora $ver
     else
-        write_dockerfile_simple fedora $dotver $dashver
+        write_dockerfile_simple fedora $ver
     fi
 }
 
 write_dockerfile_ubi () {
     local major_ver=$1
-    local dotver=$2
-    local dashver=$3
-    write_dockerfile registry.access.redhat.com ubi${major_ver} ubi ubi${major_ver} $dotver $dashver
+    local ver=$2
+    write_dockerfile registry.access.redhat.com ubi${major_ver} ubi ubi${major_ver} $ver
 }
 
 write_dockerfile_ubi8 () {
-    write_dockerfile_ubi 8 $1 $2
+    write_dockerfile_ubi 8 $1
 }
-

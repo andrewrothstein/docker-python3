@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-# example: ./install.sh alpine 3_13
+# example: ./install.sh alpine 3.13
 
 os=$1
 dashver=$2
@@ -11,4 +11,4 @@ dashver=$2
 export LC_CTYPE=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-install_${os}_${dashver}
+install_${os} ${ver}
