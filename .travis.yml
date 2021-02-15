@@ -25,8 +25,8 @@ env:
   - OS=debian VER=bullseye
   - OS=debian VER=buster
   - OS=debian VER=stretch
-  - OS=fedora VER=31
-  - OS=fedora VER=32
+  - OS=fedora VER=33
+  - OS=fedora VER=34
   - OS=ubi8 VER=8.2
   - OS=ubi8 VER=8.3
   - OS=ubuntu VER=bionic
