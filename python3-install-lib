@@ -5,6 +5,13 @@ install_dnf () {
     dnf clean all
 }
 
+install_yum () {
+    local pkg=${1:-python3}
+    yum update -y
+    yum install -y $pkg
+    yum clean all
+}
+
 install_ubi () {
     install_dnf python36
 }
@@ -87,11 +94,11 @@ install_ubuntu_xenial () {
 }
 
 install_centos_7 () {
-    install_centos
+    install_yum
 }
 
 install_centos_8 () {
-    install_centos
+    install_dnf
 }
 
 install_alpine_3_12 () {
