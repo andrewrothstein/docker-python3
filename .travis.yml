@@ -34,6 +34,7 @@ env:
   - OS=ubuntu DOTVER=xenial DASHVER=xenial
 
 before_script:
+  - buildah login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_PWD" docker.io
   - buildah login -u "$TARGET_REGISTRY_USER" -p "$TARGET_REGISTRY_PWD" quay.io
 
 script:
