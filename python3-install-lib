@@ -12,7 +12,7 @@ install_yum () {
     yum clean all
 }
 
-install_ubi () {
+install_ubi8 () {
     install_dnf python36
 }
 
@@ -114,9 +114,9 @@ install_alpine_edge () {
 }
 
 install_ubi8_8_1 () {
-    install_ubi8_8
+    install_ubi8
 }
 
 install_ubi8_8_2 () {
-    install_ubi8_8
+    install_ubi8
 }
