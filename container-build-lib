@@ -148,3 +148,12 @@ buildah_build() {
         -t $(fq_target $target_os $target_os_ver) \
         .
 }
+
+buildah_push() {
+    local -r target_os=$1
+    local -r target_os_ver=$2
+    sudo \
+        buildah \
+        push \
+        $(fq_target $target_os $target_os_ver)
+}
