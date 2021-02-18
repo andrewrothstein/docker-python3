@@ -1,14 +1,13 @@
 install_dnf () {
     local pkg=${1:-python3}
     dnf update -y
-    dnf install -y $pkg
+    dnf install -y $pkg sudo
     dnf clean all
 }
 
 install_yum () {
-    local pkg=${1:-python3}
     yum update -y
-    yum install -y $pkg
+    yum install -y python3 sudo
     yum clean all
 }
 
@@ -17,10 +16,9 @@ install_ubi8 () {
 }
 
 install_apk () {
-    local pkg=${1:-python3}
     apk update
     apk upgrade
-    apk add $pkg
+    apk add python3 sudo
     rm -rf /var/cache/apk/*
 }
 
@@ -29,10 +27,9 @@ install_alpine() {
 }
 
 install_apt_get () {
-    local pkg=${1:-python3}
     apt-get update -y
     apt-get upgrade -y
-    apt-get install -y $pkg
+    apt-get install -y python3 sudo
     apt-get clean -y
 }
 
@@ -42,7 +39,7 @@ install_ubuntu () {
 
 install_pacman () {
     pacman -S -y
-    pacman -S --noconfirm python
+    pacman -S --noconfirm python sudo
 }
 
 install_archlinux () {
