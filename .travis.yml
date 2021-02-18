@@ -36,7 +36,7 @@ env:
 
 script:
   - . ./container-build-lib
-  - login_docker_hub ${DOCKERHUB_USER} ${DOCKERHUB_PWD}
+  - login_docker_hub ${DOCKER_HUB_USER} ${DOCKER_HUB_PWD}
   - buildah_build $OS $VER
   - login_target_registry ${TARGET_REGISTRY_USER} ${TARGET_REGISTRY_PWD}
   - buildah push $(fq_target $OS $VER)
