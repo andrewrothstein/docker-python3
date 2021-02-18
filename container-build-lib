@@ -1,19 +1,43 @@
-write_dockerfile () {
+target_registry() {
+    printf "%s" ${TARGET_REGISTRY:-quay.io}
+}
+
+target_groupname() {
+    printf "%s" ${TARGET_GROUPNAME:-andrewrothstein}
+}
+
+target_name() {
+    printf "%s" ${TARGET_NAME:-docker-python3}
+}
+
+fq_target() {
+    local -r target_os=$1
+    local -r target_os_ver=$2
+    printf \
+        "%s/%s/%s:%s-%s-%s" \
+        $(target_registry) \
+        $(target_groupname) \
+        $(target_name) \
+        0.0.0 \
+        $target_os \
+        $target_os_ver
+}
+
+write_dockerfile_helper () {
     local upstream_registry=$1
     local upstream_namespace=$2
     local upstream_repo=$3
 
     local os=$4
-    local dotver=$5
+    local ver=$5
 
-    local fq_upstream=${upstream_registry}/${upstream_namespace}/${upstream_repo}:${dotver}
+    local fq_upstream=${upstream_registry}/${upstream_namespace}/${upstream_repo}:${ver}
     if [ "${upstream_namespace}" = "" ];
     then
-        fq_upstream=${upstream_registry}/${upstream_repo}:${dotver}
+        fq_upstream=${upstream_registry}/${upstream_repo}:${ver}
     fi
 
-    dockerfile=Dockerfile.${os}_${dotver}
-    echo writing Dockerfile: $dockerfile
+    local dockerfile=Dockerfile.${os}_${ver}
     cat > $dockerfile <<EOF
 FROM $fq_upstream
 MAINTAINER "Andrew Rothstein" andrew.rothstein@gmail.com
@@ -22,22 +46,38 @@ ADD python3-install-lib python3-install-lib
 ADD install.sh install.sh
 RUN ./install.sh ${os} ${ver}
 EOF
+    echo $dockerfile
 }
 
 write_dockerfile_archlinux () {
-    local ver=$1
-    write_dockerfile docker.io archlinux base archlinux $ver
+    local os_ver=$1
+    write_dockerfile_helper \
+        docker.io \
+        archlinux \
+        base \
+        archlinux \
+        $os_ver
 }
 
 write_dockerfile_gentoo () {
-    local ver=$1
-    write_dockerfile docker.io gentoo stage3-amd64 gentoo $ver
+    local os_ver=$1
+    write_dockerfile_helper \
+        docker.io \
+        gentoo \
+        stage3-amd64 \
+        gentoo \
+        $os_ver
 }
 
 write_dockerfile_simple () {
     local os=$1
-    local ver=$2
-    write_dockerfile docker.io library $os $os $ver
+    local os_ver=$2
+    write_dockerfile_helper \
+        docker.io \
+        library \
+        $os \
+        $os \
+        $os_ver
 }
 
 write_dockerfile_alpine () {
@@ -57,21 +97,54 @@ write_dockerfile_ubuntu () {
 }
 
 write_dockerfile_fedora () {
-    local ver=$1
-    if [ "$ver" -ge "24" ];
-    then
-        write_dockerfile registry.fedoraproject.org '' fedora fedora $ver
-    else
-        write_dockerfile_simple fedora $ver
-    fi
+    write_dockerfile_helper registry.fedoraproject.org '' fedora fedora $1
 }
 
 write_dockerfile_ubi () {
-    local major_ver=$1
-    local ver=$2
-    write_dockerfile registry.access.redhat.com ubi${major_ver} ubi ubi${major_ver} $ver
+    local os_major_ver=$1
+    local os_ver=$2
+    write_dockerfile_helper \
+        registry.access.redhat.com \
+        "ubi${os_major_ver}" \
+        ubi \
+        "ubi${os_major_ver}" \
+        $os_ver
 }
 
 write_dockerfile_ubi8 () {
     write_dockerfile_ubi 8 $1
+}
+
+write_dockerfile() {
+    write_dockerfile_$1 $2
+}
+
+login_registry() {
+    local -r r=$1
+    local -r u=$2
+    local -r p=$3
+    buildah login -u "$u" -p "$p" "$r"
+
+}
+
+login_docker_hub() {
+    login_registry docker.io $1 $2
+}
+
+login_target_registry() {
+    login_registry $(target_registry) $1 $2
+}
+
+buildah_build() {
+    local -r target_os=$1
+    local -r target_os_ver=$2
+    local -r dockerfile=$(write_dockerfile $target_os $target_os_ver)
+    sudo \
+        buildah \
+        bud \
+        -f $dockerfile \
+        --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
+        --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
+        -t $(fq_target $target_os $target_os_ver) \
+        .
 }

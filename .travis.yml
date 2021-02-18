@@ -11,11 +11,12 @@ before_install:
 
 language: minimal
 
-branches:
-  except:
-    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
-
 env:
+  global:
+    - TARGET_REGISTRY=quay.io
+    - TARGET_GROUPNAME=andrewrothstein
+    - TARGET_NAME=docker-python3
+  jobs:
   - OS=alpine VER=3.12
   - OS=alpine VER=3.13
   - OS=alpine VER=edge
@@ -33,10 +34,9 @@ env:
   - OS=ubuntu VER=focal
   - OS=ubuntu VER=xenial
 
-before_script:
-  - buildah login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_PWD" docker.io
-  - buildah login -u "$TARGET_REGISTRY_USER" -p "$TARGET_REGISTRY_PWD" quay.io
-
 script:
-  - ./build.sh $OS $VER
-  - buildah push quay.io/andrewrothstein/docker-python3:0.0.0-${OS}-${VER}
+  - . ./container-build-lib
+  - login_docker_hub ${DOCKERHUB_USER} ${DOCKERHUB_PWD}
+  - buildah_build $OS $VER
+  - login_target_registry ${TARGET_REGISTRY_USER} ${TARGET_REGISTRY_PWD}
+  - buildah push $(fq_target $OS $VER)
