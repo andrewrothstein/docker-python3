@@ -5,12 +5,6 @@ install_dnf () {
     dnf clean all
 }
 
-install_yum () {
-    yum update -y
-    yum install -y python3 sudo
-    yum clean all
-}
-
 install_ubi8 () {
     install_dnf python36
 }
@@ -54,11 +48,5 @@ install_debian () {
 }
 
 install_centos () {
-    local ver=$1
-    if [ "$ver" -gt "7" ];
-    then
-        install_dnf
-    else
-        install_yum
-    fi
+    install_dnf
 }

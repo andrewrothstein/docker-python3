@@ -44,7 +44,7 @@ MAINTAINER "Andrew Rothstein" andrew.rothstein@gmail.com
 
 ADD python3-install-lib python3-install-lib
 ADD install.sh install.sh
-RUN ./install.sh ${os} ${ver}
+RUN ./install.sh ${os}
 EOF
     echo $dockerfile
 }

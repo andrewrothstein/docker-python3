@@ -21,7 +21,6 @@ env:
   - OS=alpine VER=3.13
   - OS=alpine VER=edge
   - OS=archlinux VER=latest
-  - OS=centos VER=7
   - OS=centos VER=8
   - OS=debian VER=bullseye
   - OS=debian VER=buster
