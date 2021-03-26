@@ -27,6 +27,7 @@ env:
   - OS=debian VER=stretch
   - OS=fedora VER=33
   - OS=fedora VER=34
+  - OS=fedora VER=35
   - OS=ubi8 VER=8.2
   - OS=ubi8 VER=8.3
   - OS=ubuntu VER=bionic
