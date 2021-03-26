@@ -38,8 +38,7 @@ install_ubuntu () {
 }
 
 install_pacman () {
-    pacman -S -y
-    pacman -S --noconfirm python sudo
+    pacman -Syu --noconfirm python sudo
 }
 
 install_archlinux () {
