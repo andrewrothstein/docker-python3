@@ -1,0 +1,43 @@
+---
+name: quay-images
+on:
+  push:
+  schedule:
+    - cron:  '0 0 * * *'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_REGISTRY: quay.io
+      TARGET_GROUPNAME: andrewrothstein
+      TARGET_NAME: docker-python3
+    strategy:
+      matrix:
+        distro:
+          - os: alpine
+            ver: '3.13'
+          - os: alpine
+            ver: '3.14'
+          - os: alpine
+            ver: edge
+          - os: archlinux
+            ver: latest
+          - os: centos
+            ver: '8'
+          - os: debian
+            ver: bullseye
+          - os: debian
+            ver: buster
+          - os: fedora
+            ver: '34'
+          - os: ubuntu
+            ver: bionic
+          - os: ubuntu
+            ver: focal
+    steps:
+      - uses: actions/checkout@v2
+      - run: . ./container-build-lib
+      - run: login_docker_hub "${{ secrets.DOCKER_USERNAME }}" "${{ secrets.DOCKER_PASSWORD }}"
+      - run: buildah_build "${{ matrix.distro.os }}" "${{ matrix.distro.ver }}"
+      - run: login_target_registry "${{ secrets.QUAY_USERNAME }}" "${{ secrets.QUAY_PASSWORD }}"
+      - run: buildah_push "${{ matrix.distro.os }}" "${{ matrix.distro.ver }}"
