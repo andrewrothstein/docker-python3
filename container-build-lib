@@ -80,22 +80,11 @@ write_dockerfile_ubuntu () {
 }
 
 write_dockerfile_fedora () {
-    write_dockerfile_helper registry.fedoraproject.org 'N/A' fedora fedora $1
+    write_dockerfile_simple fedora $1
 }
 
-write_dockerfile_ubi () {
-    local os_major_ver=$1
-    local os_ver=$2
-    write_dockerfile_helper \
-        registry.access.redhat.com \
-        "ubi${os_major_ver}" \
-        ubi \
-        "ubi${os_major_ver}" \
-        $os_ver
-}
-
-write_dockerfile_ubi8 () {
-    write_dockerfile_ubi 8 $1
+write_dockerfile_rocklinux() {
+    write_dockerfile_simple rockylinux $1
 }
 
 write_dockerfile() {
