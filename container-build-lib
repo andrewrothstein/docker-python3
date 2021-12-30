@@ -83,7 +83,7 @@ write_dockerfile_fedora () {
     write_dockerfile_simple fedora $1
 }
 
-write_dockerfile_rocklinux() {
+write_dockerfile_rockylinux() {
     write_dockerfile_simple rockylinux $1
 }
 
