@@ -4,7 +4,7 @@ fq_target() {
     local -r target_os=$3
     local -r target_os_ver=$4
     printf \
-        "%s/%s:%s_%s" \
+        "%s/%s:%s-%s" \
         $target_registry \
         $target_slug \
         $target_os \
