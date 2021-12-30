@@ -1,26 +1,16 @@
-target_registry() {
-    printf "%s" ${TARGET_REGISTRY:-quay.io}
-}
-
-target_groupname() {
-    printf "%s" ${TARGET_GROUPNAME:-andrewrothstein}
-}
-
-target_name() {
-    printf "%s" ${TARGET_NAME:-docker-python3}
-}
-
 fq_target() {
-    local -r target_os=$1
-    local -r target_os_ver=$2
+    local -r registry=$1
+    local -r slug=$2
+    local -r image_ver=$3
+    local -r os=$4
+    local -r os_ver=$5
     printf \
-        "%s/%s/%s:%s-%s-%s" \
-        $(target_registry) \
-        $(target_groupname) \
-        $(target_name) \
-        0.0.0 \
-        $target_os \
-        $target_os_ver
+        "%s/%s:%s-%s-%s" \
+        $registry \
+        $slug \
+        $image_ver \
+        $os \
+        $os_ver
 }
 
 write_dockerfile_helper () {
@@ -49,26 +39,6 @@ EOF
     echo $dockerfile
 }
 
-write_dockerfile_archlinux () {
-    local os_ver=$1
-    write_dockerfile_helper \
-        docker.io \
-        archlinux \
-        base \
-        archlinux \
-        $os_ver
-}
-
-write_dockerfile_gentoo () {
-    local os_ver=$1
-    write_dockerfile_helper \
-        docker.io \
-        gentoo \
-        stage3-amd64 \
-        gentoo \
-        $os_ver
-}
-
 write_dockerfile_simple () {
     local os=$1
     local os_ver=$2
@@ -78,6 +48,10 @@ write_dockerfile_simple () {
         $os \
         $os \
         $os_ver
+}
+
+write_dockerfile_archlinux () {
+    write_dockerfile_simple archlinux $1
 }
 
 write_dockerfile_alpine () {
@@ -97,47 +71,23 @@ write_dockerfile_ubuntu () {
 }
 
 write_dockerfile_fedora () {
-    write_dockerfile_helper registry.fedoraproject.org '' fedora fedora $1
+    write_dockerfile_simple fedora $1
 }
 
-write_dockerfile_ubi () {
-    local os_major_ver=$1
-    local os_ver=$2
-    write_dockerfile_helper \
-        registry.access.redhat.com \
-        "ubi${os_major_ver}" \
-        ubi \
-        "ubi${os_major_ver}" \
-        $os_ver
-}
-
-write_dockerfile_ubi8 () {
-    write_dockerfile_ubi 8 $1
+write_dockerfile_rockylinux() {
+    write_dockerfile_simple rockylinux $1
 }
 
 write_dockerfile() {
     write_dockerfile_$1 $2
 }
 
-login_registry() {
-    local -r r=$1
-    local -r u=$2
-    local -r p=$3
-    buildah login -u "$u" -p "$p" "$r"
-
-}
-
-login_docker_hub() {
-    login_registry docker.io $1 $2
-}
-
-login_target_registry() {
-    login_registry $(target_registry) $1 $2
-}
-
 buildah_build() {
-    local -r target_os=$1
-    local -r target_os_ver=$2
+    local -r target_registry=$1
+    local -r target_slug=$2
+    local -r target_image_ver=$3
+    local -r target_os=$4
+    local -r target_os_ver=$5
     local -r dockerfile=$(write_dockerfile $target_os $target_os_ver)
     sudo \
         buildah \
@@ -145,15 +95,32 @@ buildah_build() {
         -f $dockerfile \
         --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
         --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
-        -t $(fq_target $target_os $target_os_ver) \
+        -t $(fq_target $target_registry $target_slug $target_image_ver $target_os $target_os_ver) \
         .
 }
 
 buildah_push() {
-    local -r target_os=$1
-    local -r target_os_ver=$2
+    local -r target_registry=$1
+    local -r target_slug=$2
+    local -r target_image_ver=$3
+    local -r target_os=$4
+    local -r target_os_ver=$5
     sudo \
         buildah \
         push \
-        $(fq_target $target_os $target_os_ver)
+        $(fq_target $target_registry $target_slug $target_image_ver $target_os $target_os_ver)
+}
+
+buildah_tag_and_push() {
+    local -r source_registry=$1
+    local -r target_registry=$2
+    local -r target_slug=$3
+    local -r target_image_ver=$4
+    local -r target_os=$5
+    local -r target_os_ver=$6
+    local -r s=$(fq_target $source_registry $target_slug $target_image_ver $target_os $target_os_ver)
+    local -r t=$(fq_target $target_registry $target_slug $target_image_ver $target_os $target_os_ver)
+
+    sudo buildah tag $s $t
+    sudo buildah push $t
 }

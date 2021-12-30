@@ -1,0 +1,55 @@
+---
+name: build-and-push-images
+on:
+  push:
+  schedule:
+    - cron:  '0 0 * * *'
+env:
+  IMAGE_VER: 0.0.0
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - os: alpine
+            ver: '3.13'
+          - os: alpine
+            ver: '3.14'
+          - os: alpine
+            ver: '3.15'
+          - os: alpine
+            ver: edge
+          - os: archlinux
+            ver: latest
+          - os: centos
+            ver: '8'
+          - os: debian
+            ver: bullseye
+          - os: debian
+            ver: buster
+          - os: fedora
+            ver: '34'
+          - os: fedora
+            ver: '35'
+          - os: rockylinux
+            ver: '8'
+          - os: ubuntu
+            ver: bionic
+          - os: ubuntu
+            ver: focal
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo buildah login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}" docker.io
+      - run: sudo buildah login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" quay.io
+      - run: sudo buildah login -u "${{ github.actor }}" -p "${{ github.token }}" ghcr.io
+      - name: build-and-push
+        run: |
+          . container-build-lib
+          buildah_build ghcr.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_push ghcr.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+      - name: tag-and-push
+        run: |
+          . container-build-lib
+          buildah_tag_and_push ghcr.io quay.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_tag_and_push ghcr.io docker.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
