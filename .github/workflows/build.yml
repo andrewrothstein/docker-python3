@@ -1,5 +1,5 @@
 ---
-name: dcb
+name: build-and-push-images
 on:
   push:
   schedule:
@@ -35,9 +35,7 @@ jobs:
           - os: fedora
             ver: '35'
           - os: rockylinux
-            ver: '8.4'
-          - os: rockylinux
-            ver: '8.5'
+            ver: '8'
           - os: ubuntu
             ver: bionic
           - os: ubuntu
