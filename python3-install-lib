@@ -50,3 +50,7 @@ install_debian () {
 install_centos () {
     install_dnf
 }
+
+install_rockylinux () {
+    install_dnf
+}
