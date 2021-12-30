@@ -103,8 +103,8 @@ buildah_push() {
     local -r target_registry=$1
     local -r target_slug=$2
     local -r target_image_ver=$3
-    local -r target_os=$3
-    local -r target_os_ver=$4
+    local -r target_os=$4
+    local -r target_os_ver=$5
     sudo \
         buildah \
         push \
