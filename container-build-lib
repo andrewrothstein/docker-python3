@@ -48,16 +48,6 @@ EOF
     echo $dockerfile
 }
 
-write_dockerfile_archlinux () {
-    local os_ver=$1
-    write_dockerfile_helper \
-        docker.io \
-        archlinux \
-        base \
-        archlinux \
-        $os_ver
-}
-
 write_dockerfile_simple () {
     local os=$1
     local os_ver=$2
@@ -67,6 +57,10 @@ write_dockerfile_simple () {
         $os \
         $os \
         $os_ver
+}
+
+write_dockerfile_archlinux () {
+    write_dockerfile_simple archlinux $1
 }
 
 write_dockerfile_alpine () {
