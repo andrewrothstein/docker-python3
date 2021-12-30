@@ -1,5 +1,5 @@
 target_registry() {
-    printf "%s" ${TARGET_REGISTRY:-quay.io}
+    printf "%s" ${TARGET_REGISTRY:-ghcr.io}
 }
 
 target_groupname() {
@@ -14,11 +14,10 @@ fq_target() {
     local -r target_os=$1
     local -r target_os_ver=$2
     printf \
-        "%s/%s/%s:%s-%s-%s" \
+        "%s/%s/%s:%s_%s" \
         $(target_registry) \
         $(target_groupname) \
         $(target_name) \
-        0.0.0 \
         $target_os \
         $target_os_ver
 }
@@ -59,16 +58,6 @@ write_dockerfile_archlinux () {
         $os_ver
 }
 
-write_dockerfile_gentoo () {
-    local os_ver=$1
-    write_dockerfile_helper \
-        docker.io \
-        gentoo \
-        stage3-amd64 \
-        gentoo \
-        $os_ver
-}
-
 write_dockerfile_simple () {
     local os=$1
     local os_ver=$2
@@ -97,7 +86,7 @@ write_dockerfile_ubuntu () {
 }
 
 write_dockerfile_fedora () {
-    write_dockerfile_helper registry.fedoraproject.org '' fedora fedora $1
+    write_dockerfile_helper registry.fedoraproject.org 'N/A' fedora fedora $1
 }
 
 write_dockerfile_ubi () {
@@ -117,22 +106,6 @@ write_dockerfile_ubi8 () {
 
 write_dockerfile() {
     write_dockerfile_$1 $2
-}
-
-login_registry() {
-    local -r r=$1
-    local -r u=$2
-    local -r p=$3
-    buildah login -u "$u" -p "$p" "$r"
-
-}
-
-login_docker_hub() {
-    login_registry docker.io $1 $2
-}
-
-login_target_registry() {
-    login_registry $(target_registry) $1 $2
 }
 
 buildah_build() {
