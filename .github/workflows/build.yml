@@ -4,10 +4,6 @@ on:
   push:
   schedule:
     - cron:  '0 0 * * *'
-env:
-  TARGET_REGISTRY: ghcr.io
-  TARGET_GROUPNAME: andrewrothstein
-  TARGET_NAME: docker-python3
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,7 +41,13 @@ jobs:
       - run: sudo buildah login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}" docker.io
       - run: sudo buildah login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" quay.io
       - run: sudo buildah login -u "${{ github.actor }}" -p "${{ github.token }}" ghcr.io
-      - run: |
+      - name: build-and-push
+        run: |
           . container-build-lib
-          buildah_build ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
-          buildah_push ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_build ghcr.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_push ghcr.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+      - name: tag-and-push
+        run: |
+          . container-build-lib
+          buildah_tag_and_push ghcr.io quay.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_tag_and_push ghcr.io docker.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
