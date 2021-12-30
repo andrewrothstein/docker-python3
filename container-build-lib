@@ -1,14 +1,16 @@
 fq_target() {
-    local -r target_registry=$1
-    local -r target_slug=$2
-    local -r target_os=$3
-    local -r target_os_ver=$4
+    local -r registry=$1
+    local -r slug=$2
+    local -r image_ver=$3
+    local -r os=$4
+    local -r os_ver=$5
     printf \
-        "%s/%s:%s-%s" \
-        $target_registry \
-        $target_slug \
-        $target_os \
-        $target_os_ver
+        "%s/%s:%s-%s+%s" \
+        $registry \
+        $slug \
+        $image_ver \
+        $os \
+        $os_ver
 }
 
 write_dockerfile_helper () {
@@ -83,8 +85,9 @@ write_dockerfile() {
 buildah_build() {
     local -r target_registry=$1
     local -r target_slug=$2
-    local -r target_os=$3
-    local -r target_os_ver=$4
+    local -r target_image_ver=$3
+    local -r target_os=$4
+    local -r target_os_ver=$5
     local -r dockerfile=$(write_dockerfile $target_os $target_os_ver)
     sudo \
         buildah \
@@ -92,29 +95,31 @@ buildah_build() {
         -f $dockerfile \
         --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
         --build-arg http_proxy --build-arg https_proxy --build-arg no_proxy \
-        -t $(fq_target $target_registry $target_slug $target_os $target_os_ver) \
+        -t $(fq_target $target_registry $target_slug $target_image_ver $target_os $target_os_ver) \
         .
 }
 
 buildah_push() {
     local -r target_registry=$1
     local -r target_slug=$2
+    local -r target_image_ver=$3
     local -r target_os=$3
     local -r target_os_ver=$4
     sudo \
         buildah \
         push \
-        $(fq_target $target_registry $target_slug $target_os $target_os_ver)
+        $(fq_target $target_registry $target_slug $target_image_ver $target_os $target_os_ver)
 }
 
 buildah_tag_and_push() {
     local -r source_registry=$1
     local -r target_registry=$2
     local -r target_slug=$3
-    local -r target_os=$4
-    local -r target_os_ver=$5
-    local -r s=$(fq_target $source_registry $target_slug $target_os $target_os_ver)
-    local -r t=$(fq_target $target_registry $target_slug $target_os $target_os_ver)
+    local -r target_image_ver=$4
+    local -r target_os=$5
+    local -r target_os_ver=$6
+    local -r s=$(fq_target $source_registry $target_slug $target_image_ver $target_os $target_os_ver)
+    local -r t=$(fq_target $target_registry $target_slug $target_image_ver $target_os $target_os_ver)
 
     sudo buildah tag $s $t
     sudo buildah push $t

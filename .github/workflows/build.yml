@@ -4,6 +4,8 @@ on:
   push:
   schedule:
     - cron:  '0 0 * * *'
+env:
+  IMAGE_VER: 0.0.0
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,10 +46,10 @@ jobs:
       - name: build-and-push
         run: |
           . container-build-lib
-          buildah_build ghcr.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
-          buildah_push ghcr.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_build ghcr.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_push ghcr.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
       - name: tag-and-push
         run: |
           . container-build-lib
-          buildah_tag_and_push ghcr.io quay.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
-          buildah_tag_and_push ghcr.io docker.io $GITHUB_REPOSITORY ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_tag_and_push ghcr.io quay.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
+          buildah_tag_and_push ghcr.io docker.io $GITHUB_REPOSITORY ${IMAGE_VER} ${{ matrix.distro.os }} ${{ matrix.distro.ver }}
